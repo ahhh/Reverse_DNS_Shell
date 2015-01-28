@@ -40,6 +40,13 @@ while 1:
   
   #encode output data, ready for loop
   output = base64.b64encode(stdoutput)
+  #Remove "=", add "-" to denote we need "="
+  if output[-1] == "=": 
+    if output[-2] == "=":
+      output = output[0]+"-"+output[1]+"-"+output[2:-2]
+    else:
+      output = output[0]+"-"+output[1:-1]
+  
   send =''
   output_end = len(output)
   for chunk in output:

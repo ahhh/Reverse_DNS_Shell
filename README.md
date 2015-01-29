@@ -1,4 +1,4 @@
-# DNSHELL v1.5
+# DNShell v1.5
 
 #### Description:
   A Python Reverse Shell that uses DNS as the C2 channel.

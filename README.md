@@ -1,5 +1,7 @@
-# Reverse_DNS_Shell
-A python reverse shell that uses DNS as the c2 channel
+# DNSHELL v1.5
+
+#### Description:
+  A Python Reverse Shell that uses DNS as the C2 channel.
 
 
 ####Requires:

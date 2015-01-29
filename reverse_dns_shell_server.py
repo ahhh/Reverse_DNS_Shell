@@ -1,4 +1,3 @@
-#!/usr/local/Cellar/python/2.7.4/bin/python2.7
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 # DNShell Server v1.3

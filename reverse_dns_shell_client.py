@@ -1,4 +1,3 @@
-#!/usr/local/Cellar/python/2.7.4/bin/python2.7
 #!/usr/bin/env python
 # DNShell Client v1.3
 

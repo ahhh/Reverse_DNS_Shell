@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # DNShell Server v1.3
 
 from Crypto.Cipher import AES

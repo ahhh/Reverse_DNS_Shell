@@ -10,6 +10,9 @@ PORT = 53
 NXT_CMD = base64.b64encode("nxt")
 PROMPT = 'SHELL >> '
 
+# REPLACE THIS WITH YOUR OWN KEY #
+secret = "TyKuwAt5vg1m48z2qYs6cUalHQrDpG0B"
+
 # the block size for the cipher object; must be 16, 24, or 32 for AES
 BLOCK_SIZE = 32
 
@@ -20,9 +23,6 @@ pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
 # encrypt with AES, encode with base64
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
-
-# REPLACE THIS WITH YOUR OWN KEY #
-secret = "TyKuwAt5vg1m48z2qYs6cUalHQrDpG0B"
 
 # create a cipher object using the random secret
 cipher = AES.new(secret)

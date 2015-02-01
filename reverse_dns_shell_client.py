@@ -13,9 +13,9 @@ TLD = 'com'
 NXT_CMD = 'nxt'
 ANSWER = ';ANSWER'
 TYPE = 'TXT'
-
-# REPLACE THIS WITH YOUR OWN KEY #
+# REPLACE THIS WITH YOUR OWN KEY AND IV #
 secret = "TyKuwAt5vg1m48z2qYs6cUalHQrDpG0B"
+iv = "1cYGbLz8qN4umT4c"
 
 # the block size for the cipher object; must be 16, 24, or 32 for AES
 BLOCK_SIZE = 32
@@ -28,8 +28,8 @@ pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
 
-# create a cipher object using the random secret
-cipher = AES.new(secret)
+# create a CBC cipher object using a random secret and iv
+cipher = AES.new(secret, AES.MODE_CBC, iv)
 
 def encrypt(string):
   encoded = EncodeAES(cipher, string)

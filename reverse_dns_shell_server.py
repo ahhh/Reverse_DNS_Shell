@@ -56,8 +56,6 @@ def killApplication():
 
 def spawnShell(answer, payload):
   # Spawns our Command Shell:
-  sys.stdout.write("\033[1K\r")
-  sys.stdout.flush()
   shellInput = raw_input(PROMPT)
   handleQuit(shellInput)
   if shellInput == '': spawnShell(answer, payload) # Prevents whitespace issues
@@ -100,8 +98,7 @@ def main():
   cmd_list = []  # Stores List of B64 Commands to be Executed
   udps = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
   udps.bind(('', PORT))  # Bind to the specified port
-  sys.stdout.write('\033[91m \t.... Waiting for Request .... \033[0m ')
-  sys.stdout.flush()
+  print '\t.... Waiting for Request ....' 
   try:
     # Setup Initial Command Shell:
     addr, payload, answer = recievePayload(udps)

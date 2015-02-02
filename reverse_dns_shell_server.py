@@ -20,7 +20,8 @@ DNSHELL = """
 
 PORT = 53
 NXT_CMD = base64.b64encode("nxt")
-PROMPT = '\033[33mSHELL\033[0m \033[35m>> \033[0m'
+PROMPT = 'SHELL >> '
+#PROMPT_COLORED = '\033[33mSHELL\033[0m \033[35m>> \033[0m'
 BLOCK_SIZE = 32  # Block size for cipher object: must be 16, 24, or 32 for AES
 PADDING = '{'  # Character used for padding
 # REPLACE THIS WITH YOUR OWN KEY AND IV #

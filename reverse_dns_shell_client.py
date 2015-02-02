@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# DNShell Client v1.3
+# DNShell Client v1.7
 
 from Crypto.Cipher import AES
 import subprocess, os

